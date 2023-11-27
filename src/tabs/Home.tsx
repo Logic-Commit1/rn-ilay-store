@@ -1,14 +1,4 @@
-/* import { IonContent, IonPage } from "@ionic/react";
-import Banner from "src/components/Banner";
-import bannerImage from "src/assets/Banner.jpg";
-import BrandNavList from "./BrandNavList/BrandNavList";
-import Logo from "src/components/Logo";
-import Button from "src/components/Button";
-import ProductCategory from "./ProductCategory/ProductCategory";
-import { productsData } from "src/data/ProductsData";
- */
-
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   View,
   SafeAreaView,
@@ -18,67 +8,37 @@ import {
   StyleSheet,
   Pressable,
   ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+  ActivityIndicator
 } from 'react-native';
 import { Card } from 'react-native-elements';
-import { supabase } from '../lib/supabase';
-import { bannerUrls } from '../data/Banner';
-import logo from '../assets/nav/logo.png';
-import cdoLogo from '../assets/brand-logo/cdo-logo.png';
-import pfLogo from '../assets/brand-logo/purefoods-logo.png';
-import bikoysLogo from "../assets/brand-logo/bikoy's-logo.png";
 
-import { Product } from 'src/data/Product';
-import BrandNav from '../components/BrandNav';
-import ProductCard from '../components/ProductCard';
+import { supabase } from '~/lib/supabase';
+import { bannerUrls } from '~/data/Banner';
+
+import { logo, cdoLogo, pfLogo, bikoysLogo } from '~/constants/icons';
+import { Product } from 'data/Product';
+import BrandNav from 'components/BrandNav';
+import ProductCard from '~/components/ProductCard';
+import { COLORS, FONT, SIZES } from '~/constants/theme';
+import { useProducts } from '../utils/productUtil';
 
 const Home: React.FC = (/* { navigation }: { navigation: any } */) => {
   const [banners, setBanners] = useState();
-  const [products, setProducts] = useState<Product[]>();
-  const [hotdogProducts, setHotdogProducts] = useState<Product[] | null>(null);
-  const [tocinoProducts, setTocinoProducts] = useState<Product[] | null>(null);
-  const [nuggetsProducts, setNuggetsProducts] = useState<Product[] | null>(
-    null
-  );
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const { data, error } = await supabase.from('products').select('*');
-      if (error) {
-        console.error(error);
-      }
-      if (data) {
-        setProducts(data);
-        const hotdogItems: Product[] = data.filter(
-          (item) => item.category.toLowerCase() === 'hotdog'
-        );
-        const tocinoItems: Product[] = data.filter(
-          (item) => item.category.toLowerCase() === 'tocino'
-        );
-        const nuggetsItems: Product[] = data.filter(
-          (item) => item.category.toLowerCase() === 'nuggets'
-        );
-        setHotdogProducts(hotdogItems);
-        setTocinoProducts(tocinoItems);
-        setNuggetsProducts(nuggetsItems);
-      } else {
-        console.log('data is null');
-      }
-    };
-    fetchProducts();
-  }, []);
+  const { loading, products, hotdogProducts, tocinoProducts, nuggetsProducts } =
+    useProducts();
 
   const handleCreateOrder = () => {
     console.log('create order pressed');
   };
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={styles.container}>
       <ScrollView>
         <Image source={logo} style={styles.logo} />
         <Image
           source={{
-            uri: 'https://atkwzqdyjmkqyusmnjqh.supabase.co/storage/v1/object/sign/ilay_store_images/banners/cdo_banner12.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJpbGF5X3N0b3JlX2ltYWdlcy9iYW5uZXJzL2Nkb19iYW5uZXIxMi5qcGciLCJpYXQiOjE2OTk5ODI3ODQsImV4cCI6MTcwMDU4NzU4NH0.XbJkSfBXbaAP2nZf2Za9gc0oMQVO2TpAG4PZDF0Q7fU&t=2023-11-14T17%3A26%3A24.785Z'
+            uri: 'https://atkwzqdyjmkqyusmnjqh.supabase.co/storage/v1/object/sign/ilay_store_images/banners/cdo_banner12.jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJpbGF5X3N0b3JlX2ltYWdlcy9iYW5uZXJzL2Nkb19iYW5uZXIxMi5qcGciLCJpYXQiOjE3MDEwMTc0OTUsImV4cCI6MTczMjU1MzQ5NX0.s9gmxbr-ab4bHA5sjdD2d6IDE4DwPJl460fyCBvFg6M&t=2023-11-26T16%3A51%3A35.187Z'
           }}
           style={styles.banner}
         />
@@ -99,74 +59,84 @@ const Home: React.FC = (/* { navigation }: { navigation: any } */) => {
             </View>
           </Pressable>
         </View>
-        <View style={styles.productsSection}>
-          <View style={styles.productsContainer}>
-            <Text style={styles.category}>Hotdog</Text>
-            <FlatList
-              data={hotdogProducts}
-              renderItem={({ item }) => (
-                <ProductCard
-                  imageSource={item.image_url}
-                  itemName={item.name}
-                  itemWeight={item.weight}
-                  itemPrice={item.price}
-                />
-              )}
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{
-                columnGap: 10,
-                paddingRight: 30,
-                padding: 8
-              }}
-              horizontal
-            />
+
+        {loading ? (
+          <ActivityIndicator
+            size="large"
+            color={COLORS.primary}
+            style={styles.loadingIndicator}
+          />
+        ) : (
+          // Display product sections if data has been loaded
+          <View style={styles.productsSection}>
+            <View style={styles.productsContainer}>
+              <Text style={styles.category}>Hotdog</Text>
+              <FlatList
+                data={hotdogProducts}
+                renderItem={({ item }) => (
+                  <ProductCard
+                    imageSource={item.image_url}
+                    itemName={item.name}
+                    itemWeight={item.weight}
+                    itemPrice={item.price}
+                  />
+                )}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{
+                  columnGap: 10,
+                  paddingRight: 30,
+                  padding: 8
+                }}
+                horizontal
+              />
+            </View>
+            <View style={styles.productsContainer}>
+              <Text style={styles.category}>Tocino</Text>
+              <FlatList
+                data={tocinoProducts}
+                renderItem={({ item }) => (
+                  <ProductCard
+                    imageSource={item.image_url}
+                    itemName={item.name}
+                    itemWeight={item.weight}
+                    itemPrice={item.price}
+                  />
+                )}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{
+                  columnGap: 10,
+                  paddingRight: 30,
+                  padding: 8
+                }}
+                horizontal
+              />
+            </View>
+            <View style={[styles.productsContainer, { paddingBottom: 80 }]}>
+              <Text style={styles.category}>Nuggets</Text>
+              <FlatList
+                data={nuggetsProducts}
+                renderItem={({ item }) => (
+                  <ProductCard
+                    imageSource={item.image_url}
+                    itemName={item.name}
+                    itemWeight={item.weight}
+                    itemPrice={item.price}
+                  />
+                )}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{
+                  columnGap: 10,
+                  paddingRight: 30,
+                  padding: 8
+                }}
+                horizontal
+              />
+            </View>
           </View>
-          <View style={styles.productsContainer}>
-            <Text style={styles.category}>Tocino</Text>
-            <FlatList
-              data={tocinoProducts}
-              renderItem={({ item }) => (
-                <ProductCard
-                  imageSource={item.image_url}
-                  itemName={item.name}
-                  itemWeight={item.weight}
-                  itemPrice={item.price}
-                />
-              )}
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{
-                columnGap: 10,
-                paddingRight: 30,
-                padding: 8
-              }}
-              horizontal
-            />
-          </View>
-          <View style={[styles.productsContainer, { paddingBottom: 80 }]}>
-            <Text style={styles.category}>Nuggets</Text>
-            <FlatList
-              data={nuggetsProducts}
-              renderItem={({ item }) => (
-                <ProductCard
-                  imageSource={item.image_url}
-                  itemName={item.name}
-                  itemWeight={item.weight}
-                  itemPrice={item.price}
-                />
-              )}
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{
-                columnGap: 10,
-                paddingRight: 30,
-                padding: 8
-              }}
-              horizontal
-            />
-          </View>
-        </View>
+        )}
       </ScrollView>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={handleCreateOrder}>
           <Text style={styles.buttonText}>Create Order</Text>
         </TouchableOpacity>
       </View>
@@ -175,6 +145,9 @@ const Home: React.FC = (/* { navigation }: { navigation: any } */) => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    marginTop: 70
+  },
   buttonContainer: {
     position: 'absolute',
     bottom: 20,
@@ -191,7 +164,6 @@ const styles = StyleSheet.create({
   logo: {
     width: 120,
     height: 20,
-    marginTop: 70,
     marginLeft: 30
   },
   category: {
@@ -213,7 +185,7 @@ const styles = StyleSheet.create({
   },
   // Products section
   productsSection: {
-    backgroundColor: '#FFECEC'
+    backgroundColor: COLORS.secondary
   },
   productsContainer: {
     marginLeft: 30,
@@ -221,14 +193,17 @@ const styles = StyleSheet.create({
   },
   button: {
     padding: 14,
-    backgroundColor: '#F65156',
+    backgroundColor: COLORS.tertiary,
     borderRadius: 10,
     elevation: 5
   },
   buttonText: {
     fontFamily: 'Poppins-SemiBold',
     color: '#fff',
-    fontSize: 14
+    fontSize: SIZES.medium
+  },
+  loadingIndicator: {
+    marginTop: 50
   }
 });
 

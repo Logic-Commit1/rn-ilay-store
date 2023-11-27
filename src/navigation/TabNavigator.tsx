@@ -47,8 +47,7 @@ const TabNavigator = () => {
         name="Search"
         component={Search}
         options={{
-          headerShadowVisible: true,
-          headerShown: true,
+          headerShown: false,
           tabBarIcon: ({ focused }) => (
             <Image
               source={require('../assets/nav/search.png')}
