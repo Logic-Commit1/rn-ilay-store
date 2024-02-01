@@ -1,5 +1,6 @@
 import { NavigationContainer } from '@react-navigation/native';
 import TabNavigator from '../navigation/TabNavigator';
+import { AuthProvider } from '../contexts/AuthenticationContext';
 
 const IlayStoreTheme = {
   dark: false,
@@ -15,7 +16,9 @@ const IlayStoreTheme = {
 
 const NavContainer = () => (
   <NavigationContainer theme={IlayStoreTheme}>
-    <TabNavigator />
+    <AuthProvider>
+      <TabNavigator />
+    </AuthProvider>
   </NavigationContainer>
 );
 

@@ -14,6 +14,7 @@ export const useProducts = () => {
   const [nuggetsProducts, setNuggetsProducts] = useState<Product[] | null>(
     null
   );
+  const [categories, setCategories] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -25,6 +26,13 @@ export const useProducts = () => {
         }
         if (data) {
           setProducts(data);
+
+          // Extract unique categories
+          const uniqueCategories = [
+            ...new Set(data.map((item) => item.category))
+          ];
+          setCategories(uniqueCategories);
+
           const hotdogItems: Product[] = data.filter(
             (item) => item.category.toLowerCase() === HOTDOG_CATEGORY
           );
@@ -50,5 +58,12 @@ export const useProducts = () => {
     fetchProducts();
   }, []);
 
-  return { loading, products, hotdogProducts, tocinoProducts, nuggetsProducts };
+  return {
+    loading,
+    products,
+    hotdogProducts,
+    tocinoProducts,
+    nuggetsProducts,
+    categories
+  };
 };

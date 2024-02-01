@@ -1,10 +1,12 @@
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import SearchProductListItem from './SearchProductListItem';
-import { useProducts } from '../utils/productUtil';
+import { Product } from '~/data/Product';
 
-const SearchProductList = () => {
-  const { loading, products } = useProducts();
+interface SearchProductListProps {
+  products: Product[];
+}
 
+const SearchProductList: React.FC<SearchProductListProps> = ({ products }) => {
   return (
     <View style={styles.container}>
       <FlatList
@@ -20,7 +22,7 @@ const SearchProductList = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           rowGap: 20,
-          paddingBottom: 100,
+          paddingBottom: 220,
           padding: 8
         }}
       />
@@ -32,6 +34,6 @@ export default SearchProductList;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 30
+    margin: 20
   }
 });

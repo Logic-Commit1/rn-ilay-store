@@ -1,4 +1,3 @@
-import React from 'react';
 import { Pressable, View, Image, StyleSheet } from 'react-native';
 
 const BrandNav = (logoSource: any) => {

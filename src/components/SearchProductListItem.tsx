@@ -1,6 +1,5 @@
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { COLORS } from '~/constants';
-import { hotdogImage } from '~/constants/icons';
 
 interface SearchProductListItemProps {
   imageSource: string;
@@ -9,18 +8,23 @@ interface SearchProductListItemProps {
   price: number;
 }
 
-const SearchProductListItem = (props: SearchProductListItemProps) => {
+const SearchProductListItem: React.FC<SearchProductListItemProps> = ({
+  imageSource,
+  name,
+  weight,
+  price
+}) => {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        <Image
-          source={{ uri: `${props.imageSource}` }}
-          style={styles.productImage}
-        />
+        <Image source={{ uri: `${imageSource}` }} style={styles.productImage} />
       </View>
       <View style={styles.productDetails}>
-        <Text style={styles.productName}>{props.name}</Text>
-        <Text style={styles.productPrice}>₱ {props.price}</Text>
+        <Text style={styles.productName}>
+          {name} ({weight}g)
+        </Text>
+        <Text style={styles.productWeight}></Text>
+        <Text style={styles.productPrice}>₱ {price}</Text>
       </View>
     </View>
   );
@@ -31,9 +35,9 @@ export default SearchProductListItem;
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 15,
-    paddingVertical: 20,
+    paddingVertical: 15,
     borderWidth: 1,
-    borderRadius: 5,
+    borderRadius: 10,
     borderColor: COLORS.gray,
     flexDirection: 'row'
   },
@@ -47,10 +51,17 @@ const styles = StyleSheet.create({
     resizeMode: 'cover'
   },
   productDetails: {
+    flex: 1,
     marginLeft: 20
   },
   productName: {
     fontFamily: 'Poppins'
+  },
+  productWeight: {
+    fontFamily: 'Poppins',
+    color: '#353535',
+    marginTop: -2,
+    fontSize: 13
   },
   productPrice: {
     fontFamily: 'Poppins'

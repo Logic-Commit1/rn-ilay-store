@@ -1,7 +1,6 @@
-import React from 'react';
-import { Platform } from 'react-native';
-import { StyleSheet, View } from 'react-native';
-import { Image, Text } from 'react-native-elements';
+import { StyleSheet, View, Image, Text, Platform } from 'react-native';
+import { TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 interface ProductCardProps {
   imageSource: string;
@@ -16,22 +15,30 @@ const ProductCard: React.FC<ProductCardProps> = ({
   itemWeight,
   itemPrice
 }) => {
+  const navigation = useNavigation<any>();
+
+  const handlePress = () => {
+    navigation.navigate('ProductDetails');
+  };
+
   return (
-    <View style={styles.container}>
-      <View style={styles.productImageContainer}>
-        <Image
-          source={{ uri: `${imageSource}` }}
-          style={styles.image}
-          resizeMode="contain"
-        />
+    <TouchableOpacity onPress={handlePress}>
+      <View style={styles.container}>
+        <View style={styles.productImageContainer}>
+          <Image
+            source={{ uri: `${imageSource}` }}
+            style={styles.image}
+            resizeMode="contain"
+          />
+        </View>
+        <View style={{ flexGrow: 1, ...styles.productDetails }}>
+          <Text style={styles.name}>
+            {itemName} ({itemWeight}g)
+          </Text>
+          <Text style={styles.price}>₱ {itemPrice}.00</Text>
+        </View>
       </View>
-      <View style={{ flexGrow: 1, ...styles.productDetails }}>
-        <Text style={styles.name}>
-          {itemName} ({itemWeight}g)
-        </Text>
-        <Text style={styles.price}>₱ {itemPrice}.00</Text>
-      </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -40,7 +47,6 @@ const styles = StyleSheet.create({
     width: 110,
     height: 155,
     borderRadius: 5,
-    boxShadow: '0px 2px 6px 1px rgba(0,0,0,0.45)',
     ...Platform.select({
       ios: {
         shadowColor: 'rgba(0,0,0,0.45)',

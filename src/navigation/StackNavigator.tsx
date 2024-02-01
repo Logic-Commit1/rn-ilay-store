@@ -1,5 +1,4 @@
-/* import * as React from 'react';
-import {createStackNavigator} from '@react-navigation/stack'
+/* import {createStackNavigator} from '@react-navigation/stack'
 import Home from '../tabs/Home';
 import Search from '../tabs/Search';
 import Orders from '../tabs/Orders';

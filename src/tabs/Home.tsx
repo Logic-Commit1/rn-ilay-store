@@ -11,25 +11,41 @@ import {
   TouchableOpacity,
   ActivityIndicator
 } from 'react-native';
-import { Card } from 'react-native-elements';
 
-import { supabase } from '~/lib/supabase';
 import { bannerUrls } from '~/data/Banner';
 
 import { logo, cdoLogo, pfLogo, bikoysLogo } from '~/constants/icons';
 import { Product } from 'data/Product';
 import BrandNav from 'components/BrandNav';
 import ProductCard from '~/components/ProductCard';
-import { COLORS, FONT, SIZES } from '~/constants/theme';
+import { COLORS, SIZES } from '~/constants/theme';
 import { useProducts } from '../utils/productUtil';
+import Button from '~/components/Button';
+import { Order, saveOrder } from '~/data/Order';
 
 const Home: React.FC = (/* { navigation }: { navigation: any } */) => {
   const [banners, setBanners] = useState();
   const { loading, products, hotdogProducts, tocinoProducts, nuggetsProducts } =
     useProducts();
 
-  const handleCreateOrder = () => {
-    console.log('create order pressed');
+  const handleCreateOrder = async () => {
+    console.log('handle create order pressed.');
+    /* const order: Order = {
+        id: 'some-id', // replace with actual id
+        userId: 'some-user-id', // replace with actual user id
+        productId: 'some-product-id', // replace with actual product id
+        quantity: 1, // replace with actual quantity
+        total_price: 100, // replace with actual total price
+        re_order: false, // replace with actual re_order value
+        created_at: new Date().toISOString(), // replace with actual created_at value
+      };
+    
+      try {
+        await saveOrder(order);
+        console.log('Order created successfully');
+      } catch (error) {
+        console.error('Error creating order:', error);
+      } */
   };
 
   return (
@@ -42,7 +58,7 @@ const Home: React.FC = (/* { navigation }: { navigation: any } */) => {
           }}
           style={styles.banner}
         />
-        <View style={styles.brandNavList}>
+        {/* <View style={styles.brandNavList}>
           <Pressable>
             <View style={styles.brandNav}>
               <Image source={cdoLogo} style={styles.brandNavLogo} />
@@ -58,7 +74,7 @@ const Home: React.FC = (/* { navigation }: { navigation: any } */) => {
               <Image source={bikoysLogo} style={styles.brandNavLogo} />
             </View>
           </Pressable>
-        </View>
+        </View> */}
 
         {loading ? (
           <ActivityIndicator
@@ -70,7 +86,7 @@ const Home: React.FC = (/* { navigation }: { navigation: any } */) => {
           // Display product sections if data has been loaded
           <View style={styles.productsSection}>
             <View style={styles.productsContainer}>
-              <Text style={styles.category}>Hotdog</Text>
+              <Text style={styles.category}>Hotdogss</Text>
               <FlatList
                 data={hotdogProducts}
                 renderItem={({ item }) => (
@@ -136,18 +152,19 @@ const Home: React.FC = (/* { navigation }: { navigation: any } */) => {
         )}
       </ScrollView>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={handleCreateOrder}>
-          <Text style={styles.buttonText}>Create Order</Text>
-        </TouchableOpacity>
+        <Button
+          label="Create Order"
+          buttonStyle={{ padding: 14 }}
+          textStyle={{ fontFamily: 'Poppins-SemiBold' }}
+          onPress={handleCreateOrder}
+        />
       </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    marginTop: 70
-  },
+  container: {},
   buttonContainer: {
     position: 'absolute',
     bottom: 20,
@@ -164,7 +181,8 @@ const styles = StyleSheet.create({
   logo: {
     width: 120,
     height: 20,
-    marginLeft: 30
+    marginLeft: 30,
+    marginTop: 10
   },
   category: {
     fontFamily: 'Poppins-SemiBold',
@@ -199,7 +217,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontFamily: 'Poppins-SemiBold',
-    color: '#fff',
+    color: COLORS.white,
     fontSize: SIZES.medium
   },
   loadingIndicator: {

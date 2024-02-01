@@ -1,34 +1,41 @@
 import 'react-native-gesture-handler';
 
-import * as SplashScreen from 'expo-splash-screen';
 import { useState, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Authentication from './components/Authentication';
 import NavContainer from './navigation/NavContainer';
-import { useFonts } from 'expo-font';
-import AppLoading from 'expo-app-loading';
+import NetInfo from '@react-native-community/netinfo';
+import FontLoader from './utils/fontLoader';
+
+// Hooks
+
+import useOffline from './hooks/useOffline';
+import useCurrentUser from './hooks/useCurrentUser';
 
 export default function App() {
-  const [fontsLoaded] = useFonts({
-    Poppins: require('./assets/fonts/Poppins-Regular.ttf'),
-    'Poppins-Bold': require('./assets/fonts/Poppins-Bold.ttf'),
-    'Poppins-SemiBold': require('./assets/fonts/Poppins-SemiBold.ttf')
-  });
+  const { fetchCurrentUser } = useCurrentUser();
+  const { isOffline, goOnline } = useOffline();
 
   useEffect(() => {
-    const prepare = async () => {
-      await SplashScreen.preventAutoHideAsync();
-    };
-    prepare();
-  }, []);
+    if (isOffline) {
+      NetInfo.fetch().then((state) => {
+        if (state.isConnected) {
+          fetchCurrentUser();
+          goOnline();
+        }
+      });
+    }
+  }, [isOffline, goOnline, fetchCurrentUser]);
 
-  if (!fontsLoaded) {
-    return undefined;
-  } else {
-    SplashScreen.hideAsync();
-  }
+  /* useEffect(() => {
+    console.log('apptsx. current user is: ');
+    console.log(currentUser);
+  }, [currentUser]); */
 
-  return <NavContainer />;
+  return (
+    <FontLoader>
+      <NavContainer />
+    </FontLoader>
+  );
 }
 
 const styles = StyleSheet.create({
